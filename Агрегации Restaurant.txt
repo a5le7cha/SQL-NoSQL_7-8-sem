@@ -1,0 +1,177 @@
+1. 
+$project
+{
+  _id: 0,
+  restaurant_id: 1,
+  name: 1,
+  borough: 1,
+  cuisine: 1
+}
+
+-----------------------------------
+2. 
+$match
+{
+    borough: "Bronx" 
+}
+
+$sort
+{
+  name: 1 
+}
+
+$limit
+5
+
+$project
+{
+  _id: 0 
+}
+-----------------------------------------
+
+3.
+$match
+{
+  "grades.score": { "$gt": 80, "$lt": 100 }
+}
+$project
+{
+  _id:0
+}
+
+-----------------------------
+4.
+$match
+{
+  "cuisine": { "$ne": "American" },
+    "grades.grade": "A",
+    "borough": { "$ne": "Brooklyn" }
+}
+
+$sort
+{
+  "cuisine": -1
+}
+
+--------------------------
+5. 
+$match
+{
+  "name": { "$regex": "^Wil", "$options": "i" }
+}
+
+$project
+{
+  _id: 0,
+    restaurant_id: 1,
+    name: 1,
+    borough: 1,
+    cuisine: 1
+}
+
+----------------------------
+
+6.
+$match
+{
+  "borough": "Bronx",
+  "cuisine": { "$in": ["American", "Chinese"] }
+}
+
+--------------------------
+
+7.
+$match
+{
+  grades: {
+      $elemMatch: {
+        date: ISODate("2014-08-11T00:00:00Z"),
+        grade: "A",
+        score: 9
+      }
+    }
+}
+
+$project
+{
+  _id: 0,
+  restaurant_id: 1,
+  name: 1,
+  grades: 1
+}
+
+-----------------------
+
+8.
+$group
+{
+  _id: {
+      borough: "$borough",
+      cuisine: "$cuisine"
+    },
+  "count": {$sum:1}
+}
+
+$project
+{
+  _id: 0,
+  borough: "$_id.borough",
+  cuisine: "$_id.cuisine",
+  count: 1
+}
+
+-----------------------
+
+9.
+$match
+{
+  borough: "Bronx"
+}
+
+$group
+{
+  _id: "$_id",
+  name: { "$first": "$name" },
+  totalScore: { "$sum": "$grades.score" }
+}
+
+$sort
+{
+  totalScore: 1
+}
+
+$limit
+1
+
+------------------------
+10.
+db.restaurants.insertOne({
+  restaurant_id: "99999999",
+  name: "Cloade mone",
+  borough: "Manhattan",
+  cuisine: "Fracne",
+  grades: []
+})
+
+
+--------------------
+
+11.
+db.restaurants.updateOne(
+  { name: "Cloade mone" },
+  { "$set": {
+    opening_hours: {
+      monday: "10:00-22:00"
+    }
+  }}
+)
+
+------------------
+
+12.
+db.restaurants.updateOne(
+  { name: "Cloade mone" },
+  { $set: { "opening_hours.sunday": "12:00-21:00" } }
+)
+
+найти количество районов в которых представлена кухня : "Американская"
